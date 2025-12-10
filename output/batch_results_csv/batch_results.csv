@@ -1,0 +1,7 @@
+airline,total_tweets,positive_count,negative_count,neutral_count,negative_ratio
+United,3822,492,2633,697,0.6889
+US Airways,2913,269,2263,381,0.7769
+American,2759,336,1960,463,0.7104
+Southwest,2420,570,1186,664,0.4901
+Delta,2222,544,955,723,0.4298
+Virgin America,504,152,181,171,0.3591

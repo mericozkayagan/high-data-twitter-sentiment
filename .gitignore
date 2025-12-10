@@ -1,0 +1,51 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Java/Maven
+target/
+*.class
+*.jar
+!target/*.jar
+dependency-reduced-pom.xml
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files (too large for git)
+data/Tweets.csv
+
+# Spark temp files
+metastore_db/
+spark-warehouse/
+derby.log
+
+# Docker
+.docker/
+
+# Temp
+*.tmp
+*.temp
