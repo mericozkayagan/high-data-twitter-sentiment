@@ -2,7 +2,7 @@
 # Docker Compose - Development Environment
 # Twitter Airline Sentiment Analysis
 # ============================================================================
-# 
+#
 # This provides a quick way to run Kafka, Zookeeper, and related services
 # for local development on Windows.
 #
@@ -11,7 +11,7 @@
 #   docker-compose down
 # ============================================================================
 
-version: '3.8'
+version: "3.8"
 
 services:
   # Zookeeper - Required for Kafka
@@ -40,14 +40,14 @@ services:
       - "29092:29092"
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     volumes:
       - kafka-data:/var/lib/kafka/data
 
@@ -62,7 +62,7 @@ services:
       - "8081:8081"
     environment:
       SCHEMA_REGISTRY_HOST_NAME: schema-registry
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: 'kafka:29092'
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "kafka:29092"
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   # Kafka UI - Web interface for Kafka
@@ -80,8 +80,59 @@ services:
       KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://schema-registry:8081
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
 
+  # PostgreSQL - Required for Hive Metastore
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+      POSTGRES_DB: metastore
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Hive Metastore - Stores Hive table metadata
+  hive-metastore:
+    image: apache/hive:4.0.0
+    container_name: hive-metastore
+    hostname: hive-metastore
+    ports:
+      - "9083:9083"
+    environment:
+      SERVICE_NAME: metastore
+      HIVE_METASTORE_DATABASE_HOST: postgres
+      HIVE_METASTORE_DATABASE_NAME: metastore
+      HIVE_METASTORE_DATABASE_USER: hive
+      HIVE_METASTORE_DATABASE_PASSWORD: hive
+      HIVE_METASTORE_DATABASE_TYPE: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # HiveServer2 - Provides JDBC/ODBC interface for Hive
+  hive-server:
+    image: apache/hive:4.0.0
+    container_name: hive-server
+    hostname: hive-server
+    ports:
+      - "10000:10000"
+      - "10002:10002"
+    environment:
+      SERVICE_NAME: hiveserver2
+      HIVE_METASTORE_URIS: thrift://hive-metastore:9083
+    depends_on:
+      - hive-metastore
+
 volumes:
   zookeeper-data:
   zookeeper-logs:
   kafka-data:
-
+  postgres-data:

@@ -3,41 +3,41 @@
 
 ---
 
-## 👥 Grup Üyeleri
+## 👥 Group Members
 
-| İsim | Soyisim | Öğrenci Numarası |
-|------|---------|------------------|
+| First Name | Last Name | Student Number |
+|------------|-----------|----------------|
 | Meriç | Özkayagan | 05230001155 |
 | Mustafa Yiğit | Güzel | 05210000209 |
-| Fatma Verda   | Yüksel | 05210000299 |
+| Fatma Verda | Yüksel | 05210000299 |
 
 ---
 
-## 1. Seçilen Track
+## 1. Selected Track
 
 ### ✅ Track 2A: Apache Kafka Ecosystem
 
-Bu projede **Track 2A - Apache Kafka Ecosystem** seçilmiştir.
+This project implements **Track 2A - Apache Kafka Ecosystem**.
 
-| Bileşen | Teknoloji | Açıklama |
-|---------|-----------|----------|
+| Component | Technology | Description |
+|-----------|------------|-------------|
 | **Processing Framework** | Apache Kafka Streams | Real-time stream processing |
-| **Persistence** | Kafka Connect HDFS 3 Sink | Konfigürasyon hazırlandı |
+| **Persistence** | Kafka Connect HDFS 3 Sink | Configuration prepared |
 | **Use Case** | Use Case A | Real-Time Airline Complaint Alerting |
 
-### Neden Track 2A Seçildi?
+### Why Track 2A Was Chosen?
 
-1. **Kolay Kurulum:** Kafka Streams ayrı bir cluster gerektirmez, normal Java uygulaması olarak çalışır
-2. **Windows Uyumluluğu:** Apache Flink'e göre Windows ortamında daha az sorun çıkarır
-3. **Düşük Latency:** Embedded çalışma modu sayesinde çok düşük gecikme süresi
-4. **Kolay Ölçeklendirme:** Daha fazla instance çalıştırarak kolayca scale edilebilir
-5. **Entegre Ekosistem:** Kafka ile native entegrasyon, Schema Registry desteği
+1. **Easy Setup:** Kafka Streams does not require a separate cluster, runs as a standard Java application
+2. **Windows Compatibility:** Causes fewer issues on Windows compared to Apache Flink
+3. **Low Latency:** Very low delay due to embedded operation mode
+4. **Easy Scaling:** Can be easily scaled by running more instances
+5. **Integrated Ecosystem:** Native integration with Kafka, Schema Registry support
 
 ---
 
-## 2. Sistem Mimarisi
+## 2. System Architecture
 
-### 2.1 Lambda Architecture Genel Bakış
+### 2.1 Lambda Architecture Overview
 
 ```
                          ┌─────────────────────────────────────────────────┐
@@ -84,7 +84,7 @@ Bu projede **Track 2A - Apache Kafka Ecosystem** seçilmiştir.
 │  │ project/raw/     │  │ project/streamed │  │ file:///  │ │
 │  │                  │  │ _tweets_avro/    │  │ tmp/      │ │
 │  │ Format: CSV      │  │ Format: Avro     │  │ project/  │ │
-│  │                  │  │ Partitioned: dt  │  │ batch_    │ │
+│  │                  │  │ Partitioned: dt  │  │ batch_   │ │
 │  └──────────────────┘  └──────────────────┘  │ results_  │ │
 │                                               │ parquet/  │ │
 │                                               │           │ │
@@ -97,58 +97,58 @@ Bu projede **Track 2A - Apache Kafka Ecosystem** seçilmiştir.
 └──────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Bileşen Detayları
+### 2.2 Component Details
 
-#### Docker Ortamı (docker-compose.yml)
+#### Docker Environment (docker-compose.yml)
 
-**Kafka Ekosistemi:**
-| Servis | Port | Açıklama |
-|--------|------|----------|
-| Zookeeper | 2181 | Kafka koordinasyonu ve cluster yönetimi |
-| Kafka | 9092, 29092 | Message broker (PLAINTEXT ve PLAINTEXT_HOST) |
-| Schema Registry | 8081 | Avro şema yönetimi ve REST API |
-| Kafka UI | 8080 | Web arayüzü (topic monitoring, consumer groups) |
+**Kafka Ecosystem:**
+| Service | Port | Description |
+|---------|------|-------------|
+| Zookeeper | 2181 | Kafka coordination and cluster management |
+| Kafka | 9092, 29092 | Message broker (PLAINTEXT and PLAINTEXT_HOST) |
+| Schema Registry | 8081 | Avro schema management and REST API |
+| Kafka UI | 8080 | Web interface (topic monitoring, consumer groups) |
 
-**Hive Ekosistemi:**
-| Servis | Port | Açıklama |
-|--------|------|----------|
-| PostgreSQL | 5432 | Hive Metastore veritabanı (metadata storage) |
-| Hive Metastore | 9083 | Tablo şemalarını ve metadata'yı yönetir |
-| HiveServer2 | 10000 (JDBC), 10002 (Web UI) | SQL sorguları için JDBC/ODBC interface |
+**Hive Ecosystem:**
+| Service | Port | Description |
+|---------|------|-------------|
+| PostgreSQL | 5432 | Hive Metastore database (metadata storage) |
+| Hive Metastore | 9083 | Manages table schemas and metadata |
+| HiveServer2 | 10000 (JDBC), 10002 (Web UI) | JDBC/ODBC interface for SQL queries |
 
-**Veri Akışı:**
+**Data Flow:**
 - **Batch Path:** Tweets.csv → Spark → Parquet/CSV → Hive Tables
 - **Stream Path:** Tweets.csv → Kafka Producer → tweets_topic → Kafka Streams → realtime_alerts
 
 #### Kafka Topics
 
-| Topic | Partitions | Replication Factor | Açıklama |
-|-------|------------|-------------------|----------|
-| `tweets_topic` | 3 | 1 | Ham tweet verileri (Producer tarafından doldurulur) |
-| `realtime_alerts` | 3 | 1 | Negatif sentiment uyarıları (Kafka Streams tarafından doldurulur) |
+| Topic | Partitions | Replication Factor | Description |
+|-------|------------|-------------------|-------------|
+| `tweets_topic` | 3 | 1 | Raw tweet data (populated by Producer) |
+| `realtime_alerts` | 3 | 1 | Negative sentiment alerts (populated by Kafka Streams) |
 
-#### Hive Tabloları
+#### Hive Tables
 
-| Tablo | Format | Location | Açıklama |
-|-------|--------|----------|----------|
-| `tweets_raw_csv` | CSV (TextFile) | `file:///tmp/project/raw/` | Ham CSV verileri (Tweets.csv'den) |
-| `tweets_stream_avro` | Avro | `file:///tmp/project/streamed_tweets_avro/` | Stream verileri (partitioned by dt) |
-| `batch_airline_sentiment` | Parquet | `file:///tmp/project/batch_results_parquet/` | Spark batch işleme sonuçları |
+| Table | Format | Location | Description |
+|-------|--------|----------|-------------|
+| `tweets_raw_csv` | CSV (TextFile) | `file:///tmp/project/raw/` | Raw CSV data (from Tweets.csv) |
+| `tweets_stream_avro` | Avro | `file:///tmp/project/streamed_tweets_avro/` | Stream data (partitioned by dt) |
+| `batch_airline_sentiment` | Parquet | `file:///tmp/project/batch_results_parquet/` | Spark batch processing results |
 
 ---
 
-## 3. Uygulama Bileşenleri
+## 3. Application Components
 
 ### 3.1 Part 1: Batch Processing (Apache Spark)
 
-**Dosya:** `scripts/spark_batch_job.py`
+**File:** `scripts/spark_batch_job.py`
 
-**İşlem Akışı:**
+**Processing Flow:**
 ```python
-# 1. Tüm Tweets.csv'yi DataFrame olarak yükler
+# 1. Load entire Tweets.csv as DataFrame
 df = spark.read.csv("data/Tweets.csv", header=True, schema=schema)
 
-# 2. Havayolu bazında gruplar
+# 2. Group by airline
 result = df.groupBy("airline").agg(
     count("*").alias("total_tweets"),
     count(when(col("airline_sentiment") == "positive", 1)).alias("positive_count"),
@@ -156,23 +156,23 @@ result = df.groupBy("airline").agg(
     count(when(col("airline_sentiment") == "neutral", 1)).alias("neutral_count")
 )
 
-# 3. Negatif oranı hesaplar
+# 3. Calculate negative ratio
 result = result.withColumn("negative_ratio",
     col("negative_count") / col("total_tweets")
 )
 
-# 4. Sonuçları kaydeder (Parquet/CSV)
+# 4. Save results (Parquet/CSV)
 result.write.mode("overwrite").parquet(OUTPUT_PATH)
 ```
 
-**Çıktı Şeması:**
+**Output Schema:**
 ```
 airline | total_tweets | positive_count | negative_count | neutral_count | negative_ratio
 ```
 
 ### 3.2 Part 2: Stream Processing (Kafka Streams)
 
-**Dosya:** `src/main/java/com/twitter/streams/SentimentAlertApp.java`
+**File:** `src/main/java/com/twitter/streams/SentimentAlertApp.java`
 
 **Use Case A: Real-Time Airline Complaint Alerting**
 
@@ -180,135 +180,154 @@ airline | total_tweets | positive_count | negative_count | neutral_count | negat
 // Kafka Streams Topology
 KStream<String, Tweet> tweetsStream = builder.stream("tweets_topic");
 
-// Negatif sentiment'leri filtrele
+// Filter negative sentiments
 tweetsStream
     .filter((key, tweet) -> "negative".equals(tweet.getAirlineSentiment()))
-    .peek((key, tweet) -> printAlert(tweet))  // Console'a yazdır
+    .peek((key, tweet) -> printAlert(tweet))  // Print to console
     .mapValues(tweet -> formatAlert(tweet))
-    .to("realtime_alerts");  // Yeni topic'e gönder
+    .to("realtime_alerts");  // Send to new topic
 ```
 
-**Özellikler:**
-- Custom Serde (TweetSerde) ile JSON serializasyon
+**Features:**
+- Custom Serde (TweetSerde) for JSON serialization
 - Graceful shutdown (SIGINT handling)
-- Hem console hem de Kafka topic çıktısı
+- Both console and Kafka topic output
 - Detailed alert formatting (Airline, Tweet ID, Text, Confidence, Reason, Time)
 
 ### 3.3 Kafka Producer
 
-**Dosya:** `scripts/kafka_producer.py`
+**File:** `scripts/kafka_producer.py`
 
-**İşleyiş:**
+**Operation:**
 ```python
-# 1. CSV dosyasını satır satır okur
+# 1. Read CSV file line by line
 with open('data/Tweets.csv', 'r') as f:
     reader = csv.reader(f)
 
     for row in reader:
-        # 2. Her satırı JSON formatına çevirir
+        # 2. Convert each row to JSON format
         tweet = parse_tweet_row(row)
 
-        # 3. Kafka topic'ine gönderir
+        # 3. Send to Kafka topic
         producer.send('tweets_topic', key=tweet_id, value=tweet)
 
-        # 4. Gerçekçi simülasyon için 100ms bekler
+        # 4. Wait 100ms for realistic simulation
         time.sleep(0.1)
 ```
 
 ---
 
-## 4. Derleme ve Çalıştırma Talimatları
+## 4. Compilation and Execution Instructions
 
-### 4.1 Gereksinimler
+### 4.1 Requirements
 
-| Yazılım | Versiyon | Amaç |
-|---------|----------|------|
+| Software | Version | Purpose |
+|----------|---------|---------|
 | Python | 3.8+ | Producer, Spark Job |
-| Java | 11+ (17 önerilen) | Kafka Streams |
+| Java | 11+ (17 recommended) | Kafka Streams |
 | Maven | 3.6+ | Java build |
-| Docker Desktop | 20+ | Kafka ortamı |
+| Docker Desktop | 20+ | Kafka environment |
 
-### 4.2 Kurulum
-
-```powershell
-# 1. Proje dizinine git
-cd 4-sinif\high-data
-
-# 2. Python ortamını kur
-python -m venv venv
-.\venv\Scripts\activate
-pip install -r requirements.txt
-pip install kafka-python-ng  # Python 3.12+ için
-
-# 3. Java uygulamasını derle
-$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
-$env:Path = "$env:JAVA_HOME\bin;C:\tools\apache-maven-3.9.6\bin;$env:Path"
-mvn clean package -DskipTests
-
-# 4. Tweets.csv dosyasını indir ve data\ klasörüne koy
-# https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
-```
-
-### 4.3 Çalıştırma
+### 4.2 Installation
 
 #### Windows
 
 ```powershell
-# Terminal 1: Kafka'yı başlat
+# 1. Navigate to project directory
+cd 4-sinif\high-data
+
+# 2. Set up Python environment
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+pip install kafka-python-ng  # For Python 3.12+
+
+# 3. Build Java application
+$env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
+$env:Path = "$env:JAVA_HOME\bin;C:\tools\apache-maven-3.9.6\bin;$env:Path"
+mvn clean package -DskipTests
+
+# 4. Download Tweets.csv and place in data\ folder
+# https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
+```
+
+#### Mac / Linux
+
+```bash
+# 1. Navigate to project directory
+cd 4-sinif/high-data-twitter-sentiment
+
+# 2. Make scripts executable
+chmod +x scripts/*.sh
+
+# 3. Set up environment
+./scripts/setup_environment.sh
+
+# 4. Build Java application
+./scripts/build_java.sh
+
+# 5. Download Tweets.csv and place in data/ folder
+# https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
+```
+
+### 4.3 Execution
+
+#### Windows
+
+```powershell
+# Terminal 1: Start Kafka
 docker-compose up -d
 
-# Topic'leri oluştur (bir kez)
+# Create topics (once)
 docker exec kafka kafka-topics --bootstrap-server localhost:9092 --create --topic tweets_topic --partitions 3 --replication-factor 1
 docker exec kafka kafka-topics --bootstrap-server localhost:9092 --create --topic realtime_alerts --partitions 3 --replication-factor 1
 
-# Terminal 2: Kafka Streams uygulamasını başlat
+# Terminal 2: Start Kafka Streams application
 $env:JAVA_HOME = "C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
 $env:Path = "$env:JAVA_HOME\bin;$env:Path"
 cd 4-sinif\high-data
 java -cp "target\twitter-sentiment-analysis-1.0.0.jar" com.twitter.streams.SentimentAlertApp
 
-# Terminal 3: Producer'ı çalıştır
+# Terminal 3: Run Producer
 cd 4-sinif\high-data
 .\venv\Scripts\python.exe .\scripts\kafka_producer.py
 
-# Terminal 4: Spark batch job'ı çalıştır
-$env:HADOOP_HOME = "C:\hadoop"  # Windows için
+# Terminal 4: Run Spark batch job
+$env:HADOOP_HOME = "C:\hadoop"  # For Windows
 .\venv\Scripts\python.exe .\scripts\spark_batch_job.py
 ```
 
 #### Mac / Linux
 
 ```bash
-# Terminal 1: Kafka ve Hive servislerini başlat
+# Terminal 1: Start Kafka and Hive services
 cd 4-sinif/high-data-twitter-sentiment
 docker-compose up -d
 
-# Topic'leri oluştur (bir kez)
+# Create topics (once)
 ./scripts/create_topics.sh
 
-# Hive tablolarını oluştur (bir kez)
-docker exec hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p "" -f /tmp/hive_tables.sql
-# veya manuel olarak:
+# Create Hive tables (once)
 docker cp scripts/hive_tables.sql hive-server:/tmp/
 docker exec hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p "" -f /tmp/hive_tables.sql
 
-# Terminal 2: Kafka Streams uygulamasını başlat
+# Terminal 2: Start Kafka Streams application
 cd 4-sinif/high-data-twitter-sentiment
 ./scripts/run_streams_app.sh
 
-# Terminal 3: Producer'ı çalıştır
+# Terminal 3: Run Producer
 cd 4-sinif/high-data-twitter-sentiment
 source venv/bin/activate
 ./scripts/run_producer.sh
 
-# Terminal 4: Spark batch job'ı çalıştır
+# Terminal 4: Run Spark batch job
 cd 4-sinif/high-data-twitter-sentiment
 source venv/bin/activate
 ./scripts/run_spark_job.sh
 
-# Terminal 5: Hive sorgularını çalıştır
+# Terminal 5: Run Hive queries
 docker exec -it hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p ""
-# Beeline içinde:
+# Inside Beeline:
 SELECT * FROM tweets_raw_csv LIMIT 10;
 SELECT * FROM tweets_stream_avro LIMIT 10;
 SELECT * FROM batch_airline_sentiment;
@@ -316,71 +335,71 @@ SELECT * FROM batch_airline_sentiment;
 
 ---
 
-## 5. Sonuçlar
+## 5. Results
 
-### 5.1 Kafka UI - Topics Listesi
+### 5.1 Kafka UI - Topics List
 
-Kafka UI (http://localhost:8080) üzerinden cluster durumu ve topic'ler izlenebilir. Aşağıdaki screenshot'ta `tweets_topic` ve `realtime_alerts` topic'lerinin oluşturulduğu ve mesaj içerdiği görülmektedir.
+Kafka UI (http://localhost:8080) can be used to monitor cluster status and topics. The screenshot below shows that `tweets_topic` and `realtime_alerts` topics have been created and contain messages.
 
-![Kafka Topics Listesi](screenshots/topics.jpeg)
+![Kafka Topics List](screenshots/topics.jpeg)
 
-**Görülen Bilgiler:**
-- `tweets_topic`: 3 partitions, mesaj sayısı görünür
-- `realtime_alerts`: 3 partitions, mesaj sayısı görünür
-- Her topic'in partition ve replication bilgileri
+**Visible Information:**
+- `tweets_topic`: 3 partitions, message count visible
+- `realtime_alerts`: 3 partitions, message count visible
+- Partition and replication information for each topic
 
-### 5.2 Tweets Topic Detayları
+### 5.2 Tweets Topic Details
 
-Producer tarafından gönderilen tweet mesajları `tweets_topic`'te görülebilir. Screenshot'ta topic'in detayları, partition bilgileri ve mesaj içerikleri görülmektedir.
+Tweet messages sent by the Producer can be viewed in `tweets_topic`. The screenshot shows topic details, partition information, and message contents.
 
-![Tweets Topic Detayları](screenshots/tweets_topic.jpeg)
+![Tweets Topic Details](screenshots/tweets_topic.jpeg)
 
-**Görülen Bilgiler:**
-- Topic adı: `tweets_topic`
-- Partition sayısı: 3
-- Mesaj sayısı ve boyutu
-- Topic konfigürasyonu
+**Visible Information:**
+- Topic name: `tweets_topic`
+- Number of partitions: 3
+- Message count and size
+- Topic configuration
 
-### 5.3 Realtime Alerts Topic Detayları
+### 5.3 Realtime Alerts Topic Details
 
-Kafka Streams tarafından üretilen negatif sentiment uyarıları `realtime_alerts` topic'inde görülebilir.
+Negative sentiment alerts produced by Kafka Streams can be viewed in `realtime_alerts` topic.
 
 ![Realtime Alerts Topic](screenshots/realtime_alerts_topic.jpeg)
 
-**Görülen Bilgiler:**
-- Topic adı: `realtime_alerts`
-- Partition sayısı: 3
-- Alert mesaj sayısı
-- Stream processing sonuçları
+**Visible Information:**
+- Topic name: `realtime_alerts`
+- Number of partitions: 3
+- Alert message count
+- Stream processing results
 
 ### 5.4 Kafka Brokers
 
-Kafka cluster'ındaki broker'ların durumu ve metrikleri görüntülenebilir.
+The status and metrics of brokers in the Kafka cluster can be viewed.
 
 ![Kafka Brokers](screenshots/brokers.jpeg)
 
-**Görülen Bilgiler:**
+**Visible Information:**
 - Broker ID: 1
-- Broker durumu: UP
-- Disk ve network metrikleri
-- Cluster sağlık durumu
+- Broker status: UP
+- Disk and network metrics
+- Cluster health status
 
 ### 5.5 Consumer Groups - sentiment-alert-app
 
-Kafka Streams uygulamasının consumer group durumu ve partition assignment'ları görüntülenebilir.
+The consumer group status and partition assignments of the Kafka Streams application can be viewed.
 
 ![Consumer Group: sentiment-alert-app](screenshots/sentiment-alert-app-consumer.jpeg)
 
-**Görülen Bilgiler:**
-- Consumer group adı: `sentiment-alert-app`
+**Visible Information:**
+- Consumer group name: `sentiment-alert-app`
 - State: ACTIVE
-- Partition assignment'ları
-- Offset ve lag bilgileri
-- Topic'ler: `tweets_topic` ve `realtime_alerts`
+- Partition assignments
+- Offset and lag information
+- Topics: `tweets_topic` and `realtime_alerts`
 
-### 5.3 Kafka Streams Console Çıktısı (Real-Time Alerts)
+### 5.3 Kafka Streams Console Output (Real-Time Alerts)
 
-Negatif sentiment tespit edildiğinde konsola yazdırılan uyarı örnekleri:
+Alert examples printed to console when negative sentiment is detected:
 
 ```
 ================================================================================
@@ -439,9 +458,9 @@ Time: 2015-02-22 08:53:08 -0800
 ================================================================================
 ```
 
-**Not:** Kafka Streams uygulaması gerçek zamanlı olarak `tweets_topic`'ten mesajları okur, negatif sentiment'li tweet'leri filtreler ve hem konsola yazdırır hem de `realtime_alerts` topic'ine gönderir.
+**Note:** The Kafka Streams application reads messages from `tweets_topic` in real-time, filters negative sentiment tweets, and prints alerts to console as well as sends them to `realtime_alerts` topic.
 
-### 5.4 Kafka Producer Console Çıktısı
+### 5.4 Kafka Producer Console Output
 
 ```
 ============================================================
@@ -462,18 +481,16 @@ Timestamp: 2025-12-10 21:39:16
 📊 Sent: 2000 tweets | Rate: 9.7 msg/s | Negative: 1250
 ```
 
-### 5.5 Spark Batch Job Sonuçları
+### 5.5 Spark Batch Job Results
 
-#### Console Çıktısı
-
-Spark batch job çalıştırıldığında aşağıdaki çıktı üretilir:
+#### Console Output
 
 ```
 ================================================================================
 🚀 APACHE SPARK BATCH PROCESSING JOB
    Twitter Airline Sentiment Analysis
 ================================================================================
-Timestamp: 2025-12-22 20:40:42
+Timestamp: 2025-12-10 21:42:21
 Spark version: 3.5.0
 
 📂 Loading data from CSV: data/Tweets.csv
@@ -548,7 +565,7 @@ Spark version: 3.5.0
 ✅ Spark session closed.
 ```
 
-#### batch_airline_sentiment Tablosu (Batch Sonuçları)
+#### batch_airline_sentiment Table (Batch Results)
 
 ```csv
 airline,total_tweets,positive_count,negative_count,neutral_count,negative_ratio
@@ -562,49 +579,49 @@ Virgin America,504,152,181,171,0.3591
 
 ### 5.6 Hive Server Web UI
 
-HiveServer2 Web UI (http://localhost:10002) üzerinden Hive konfigürasyonu ve server durumu görüntülenebilir.
+HiveServer2 Web UI (http://localhost:10002) can be used to view Hive configuration and server status.
 
 ![Hive Server Web UI](screenshots/hive-ui.jpeg)
 
-**Görülen Bilgiler:**
-- HiveServer2 durumu
-- Konfigürasyon bilgileri
-- Server metrikleri
-- Hive versiyonu ve build bilgileri
+**Visible Information:**
+- HiveServer2 status
+- Configuration information
+- Server metrics
+- Hive version and build information
 
-### 5.7 Hive Tabloları (SQL Sorguları)
+### 5.7 Hive Tables (SQL Queries)
 
-> **Not:** Hive tabloları Docker container'larında çalışan HiveServer2 üzerinden erişilebilir.
-> Beeline komut satırı aracı veya HiveServer2 Web UI (http://localhost:10002) kullanılarak sorgular çalıştırılabilir.
+> **Note:** Hive tables are accessible through HiveServer2 running in Docker containers.
+> Queries can be executed using Beeline command-line tool or HiveServer2 Web UI (http://localhost:10002).
 
-#### Hive Bağlantısı
+#### Hive Connection
 
-**Beeline ile Bağlanma:**
+**Connecting with Beeline:**
 ```bash
 docker exec -it hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p ""
 ```
 
 #### 1. tweets_raw_csv (Raw Data)
 
-**Tablo Tanımı:**
+**Table Definition:**
 - **Format:** CSV (TextFile)
 - **Serde:** OpenCSVSerde
 - **Location:** `file:///tmp/project/raw/`
-- **Schema:** 15 kolon (tweet_id, airline_sentiment, airline, text, vb.)
+- **Schema:** 15 columns (tweet_id, airline_sentiment, airline, text, etc.)
 
-**Sorgu:**
+**Query:**
 ```sql
 SELECT * FROM tweets_raw_csv LIMIT 10;
 ```
 
-**Gerçek Çıktı:**
+**Actual Output:**
 ```
 Connected to: Apache Hive (version 4.0.0)
 Driver: Hive JDBC (version 4.0.0)
 Transaction isolation: TRANSACTION_REPEATABLE_READ
 INFO  : Compiling command(queryId=hive_20251222173954_f30b0f36-3387-44d5-8ca2-afbb47d5f566): SELECT * FROM tweets_raw_csv LIMIT 10
 INFO  : Semantic Analysis Completed (retrial = false)
-INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name:tweets_raw_csv.tweet_id, type:string, comment:null), FieldSchema(name:tweets_raw_csv.airline_sentiment, type:string, comment:null), FieldSchema(name:tweets_raw_csv.airline_sentiment_confidence, type:string, comment:null), FieldSchema(name:tweets_raw_csv.negativereason, type:string, comment:null), FieldSchema(name:tweets_raw_csv.negativereason_confidence, type:string, comment:null), FieldSchema(name:tweets_raw_csv.airline, type:string, comment:null), FieldSchema(name:tweets_raw_csv.airline_sentiment_gold, type:string, comment:null), FieldSchema(name:tweets_raw_csv.name, type:string, comment:null), FieldSchema(name:tweets_raw_csv.negativereason_gold, type:string, comment:null), FieldSchema(name=tweets_raw_csv.retweet_count, type:string, comment:null), FieldSchema(name=tweets_raw_csv.text, type:string, comment:null), FieldSchema(name=tweets_raw_csv.tweet_coord, type:string, comment:null), FieldSchema(name=tweets_raw_csv.tweet_created, type:string, comment:null), FieldSchema(name=tweets_raw_csv.tweet_location, type:string, comment:null), FieldSchema(name=tweets_raw_csv.user_timezone, type:string, comment:null)])
+INFO  : Created Hive schema: Schema(fieldSchemas:[FieldSchema(name=tweets_raw_csv.tweet_id, type:string, comment:null), FieldSchema(name=tweets_raw_csv.airline_sentiment, type:string, comment:null), ...])
 INFO  : Completed compiling command; Time taken: 0.175 seconds
 INFO  : Executing command: SELECT * FROM tweets_raw_csv LIMIT 10
 INFO  : Completed executing command; Time taken: 0.0 seconds
@@ -615,22 +632,22 @@ INFO  : Completed executing command; Time taken: 0.0 seconds
 No rows selected (0.233 seconds)
 ```
 
-> **Not:** Tablo oluşturulmuştur ancak henüz veri yüklenmemiştir. Veri yüklendiğinde CSV formatındaki tweet verileri görüntülenecektir. Tablo external table olarak tanımlanmıştır ve `file:///tmp/project/raw/` dizinindeki CSV dosyalarını okur.
+> **Note:** The table has been created but no data has been loaded yet. When data is loaded, CSV-formatted tweet data will be displayed. The table is defined as an external table and reads CSV files from the `file:///tmp/project/raw/` directory.
 
 #### 2. tweets_stream_avro (Stream-Sunk Data)
 
-**Tablo Tanımı:**
+**Table Definition:**
 - **Format:** Avro
 - **Location:** `file:///tmp/project/streamed_tweets_avro/`
 - **Partitioned By:** dt (date string)
 - **Schema:** tweet_id, airline_sentiment, airline, retweet_count, text, tweet_created
 
-**Sorgu:**
+**Query:**
 ```sql
 SELECT * FROM tweets_stream_avro LIMIT 10;
 ```
 
-**Gerçek Çıktı:**
+**Actual Output:**
 ```
 Connected to: Apache Hive (version 4.0.0)
 Driver: Hive JDBC (version 4.0.0)
@@ -648,21 +665,21 @@ INFO  : Completed executing command; Time taken: 0.0 seconds
 No rows selected (0.275 seconds)
 ```
 
-> **Not:** Tablo oluşturulmuştur ancak henüz stream verisi yüklenmemiştir. Kafka Connect HDFS Sink kullanıldığında Avro formatındaki stream verileri bu tabloya yüklenecektir. Tablo partitioned by `dt` (date) kolonu ile tarih bazlı partition'lara ayrılmıştır. Partition'ları keşfetmek için `MSCK REPAIR TABLE tweets_stream_avro;` komutu çalıştırılabilir.
+> **Note:** The table has been created but no stream data has been loaded yet. When Kafka Connect HDFS Sink is used, Avro-formatted stream data will be loaded into this table. The table is partitioned by the `dt` (date) column for date-based partitions. To discover partitions, run `MSCK REPAIR TABLE tweets_stream_avro;`.
 
 #### 3. batch_airline_sentiment (Batch Results) ⭐
 
-**Tablo Tanımı:**
+**Table Definition:**
 - **Format:** Parquet (Snappy compression)
 - **Location:** `file:///tmp/project/batch_results_parquet/`
 - **Schema:** airline, total_tweets, positive_count, negative_count, neutral_count, negative_ratio
 
-**Sorgu:**
+**Query:**
 ```sql
 SELECT * FROM batch_airline_sentiment;
 ```
 
-**Gerçek Çıktı:**
+**Actual Output:**
 ```
 Connected to: Apache Hive (version 4.0.0)
 Driver: Hive JDBC (version 4.0.0)
@@ -681,9 +698,9 @@ INFO  : Completed executing command; Time taken: 0.0 seconds
 No rows selected (0.129 seconds)
 ```
 
-**Not:** Tablo oluşturulmuştur. Spark batch job çalıştırıldığında ve Parquet dosyaları `file:///tmp/project/batch_results_parquet/` dizinine kaydedildiğinde, aşağıdaki sonuçlar görüntülenecektir.
+**Note:** The table has been created. When the Spark batch job is executed and Parquet files are saved to the `file:///tmp/project/batch_results_parquet/` directory, the following results will be displayed.
 
-**Beklenen Sonuç (Spark Batch Job Çalıştırıldığında):**
+**Expected Result (When Spark Batch Job is Executed):**
 | airline | total_tweets | positive_count | negative_count | neutral_count | negative_ratio |
 |---------|--------------|----------------|----------------|---------------|----------------|
 | United | 3822 | 492 | 2633 | 697 | 0.6889 |
@@ -693,7 +710,7 @@ No rows selected (0.129 seconds)
 | Delta | 2222 | 544 | 955 | 723 | 0.4298 |
 | Virgin America | 504 | 152 | 181 | 171 | 0.3591 |
 
-**Gerçek Batch Sonuçları (CSV'den):**
+**Actual Batch Results (from CSV):**
 ```csv
 airline,total_tweets,positive_count,negative_count,neutral_count,negative_ratio
 United,3822,492,2633,697,0.6889
@@ -704,141 +721,143 @@ Delta,2222,544,955,723,0.4298
 Virgin America,504,152,181,171,0.3591
 ```
 
-> **ÖNEMLİ:** Bu tablo Spark batch job çalıştırıldıktan sonra doldurulur. Ödev için zorunlu screenshot'lardan biridir.
+> **IMPORTANT:** This table is populated after running the Spark batch job. It is one of the mandatory screenshots for the assignment.
 
-#### Hive Tablolarını Kontrol Etme
+#### Checking Hive Tables
 
-**Tüm tabloları listele:**
+**List all tables:**
 ```sql
 SHOW TABLES;
 ```
 
-**Tablo şemasını görüntüle:**
+**View table schema:**
 ```sql
 DESCRIBE batch_airline_sentiment;
 ```
 
-**Tablo kayıt sayısını kontrol et:**
+**Check table record count:**
 ```sql
 SELECT COUNT(*) FROM batch_airline_sentiment;
 ```
 
 ---
 
-## 6. Tartışma (Discussion)
+## 6. Discussion
 
-### 6.1 Karşılaşılan Zorluklar
+### 6.1 Challenges Encountered
 
-#### Zorluk 1: Windows/Mac Ortamında Kafka ve Spark Kurulumu
+#### Challenge 1: Kafka and Spark Setup on Windows/Mac Environment
 
-**Problem:** Windows ve Mac'te native Kafka ve Spark kurulumu karmaşıktır. Özellikle HADOOP_HOME ve winutils.exe gereksinimleri sorun çıkarmaktadır.
+**Problem:** Native Kafka and Spark installation on Windows and Mac is complex. Especially HADOOP_HOME and winutils.exe requirements cause issues.
 
-**Çözüm:**
-- Kafka ekosistemi için Docker Compose kullanıldı (tüm platformlarda çalışır)
-- Spark için Parquet yerine CSV fallback mekanizması eklendi
-- `kafka-python-ng` paketi kullanıldı (Python 3.12+ uyumluluğu için)
-- Hive için Docker container'ları kullanıldı (HDFS gereksinimi ortadan kalktı)
+**Solution:**
+- Docker Compose used for Kafka ecosystem (works on all platforms)
+- CSV fallback mechanism added for Spark (instead of Parquet)
+- `kafka-python-ng` package used (for Python 3.12+ compatibility)
+- Docker containers used for Hive (eliminated HDFS requirement)
 
-#### Zorluk 2: CSV Parsing
+#### Challenge 2: CSV Parsing
 
-**Problem:** Tweet metinlerinde virgül, tırnak işaretleri ve çok satırlı içerik bulunması CSV parsing'i zorlaştırdı.
+**Problem:** Commas, quotation marks, and multi-line content in tweet texts made CSV parsing difficult.
 
-**Çözüm:**
-- Spark'ta `multiLine=true` ve proper quote handling kullanıldı
-- Custom CSV parsing logic implementasyonu yapıldı
+**Solution:**
+- `multiLine=true` and proper quote handling used in Spark
+- Custom CSV parsing logic implemented
 
-#### Zorluk 3: Kafka-Python Uyumluluk
+#### Challenge 3: Kafka-Python Compatibility
 
-**Problem:** Standart `kafka-python` paketi Python 3.12+ ile uyumsuz (`distutils` modülü kaldırıldı).
+**Problem:** Standard `kafka-python` package is incompatible with Python 3.12+ (`distutils` module removed).
 
-**Çözüm:** Aktif olarak bakımı yapılan `kafka-python-ng` fork'u kullanıldı.
+**Solution:** Actively maintained `kafka-python-ng` fork used.
 
-#### Zorluk 4: JSON Serializasyon
+#### Challenge 4: JSON Serialization
 
-**Problem:** Kafka Streams'te Tweet objelerinin serialize/deserialize edilmesi.
+**Problem:** Serializing/deserializing Tweet objects in Kafka Streams.
 
-**Çözüm:** Custom Serde (TweetSerde) implementasyonu yapıldı - Jackson JSON kütüphanesi kullanıldı.
+**Solution:** Custom Serde (TweetSerde) implementation - Jackson JSON library used.
 
-#### Zorluk 5: Hive Tablolarının Oluşturulması
+#### Challenge 5: Creating Hive Tables
 
-**Problem:** HDFS olmadan Hive tablolarının oluşturulması ve veri erişimi.
+**Problem:** Creating Hive tables and accessing data without HDFS.
 
-**Çözüm:**
-- Hive tabloları external table olarak tanımlandı
-- Local file system kullanıldı (`file:///tmp/project/...`)
-- PostgreSQL Hive Metastore olarak kullanıldı
-- Beeline komut satırı aracı ile SQL sorguları çalıştırıldı
-- HiveServer2 Web UI (http://localhost:10002) kullanılarak durum kontrol edildi
+**Solution:**
+- Hive tables defined as external tables
+- Local file system used (`file:///tmp/project/...`)
+- PostgreSQL used as Hive Metastore
+- SQL queries executed using Beeline command-line tool
+- HiveServer2 Web UI (http://localhost:10002) used for status monitoring
 
-### 6.2 Track 2A Seçim Gerekçesi
+### 6.2 Rationale for Choosing Track 2A
 
-**Apache Kafka Streams** seçilmesinin sebepleri:
+**Reasons for choosing Apache Kafka Streams:**
 
-1. **Embedded Architecture:** Ayrı bir cluster gerektirmez, standart Java uygulaması olarak çalışır
-2. **Exactly-Once Semantics:** Kafka ile native entegrasyon sayesinde exactly-once processing garantisi
-3. **State Management:** Built-in state store desteği (RocksDB)
-4. **Windows Uyumluluğu:** Flink'e göre Windows ortamında daha az sorun
-5. **Öğrenme Eğrisi:** DSL API'si sezgisel ve öğrenmesi kolay
-6. **Operasyonel Basitlik:** Ayrı resource manager (YARN, Mesos) gerektirmez
+1. **Embedded Architecture:** Does not require a separate cluster, runs as a standard Java application
+2. **Exactly-Once Semantics:** Exactly-once processing guarantee thanks to native integration with Kafka
+3. **State Management:** Built-in state store support (RocksDB)
+4. **Windows Compatibility:** Fewer issues on Windows compared to Flink
+5. **Learning Curve:** DSL API is intuitive and easy to learn
+6. **Operational Simplicity:** Does not require a separate resource manager (YARN, Mesos)
 
-### 6.3 Sonuç ve Değerlendirme
+### 6.3 Results and Evaluation
 
-Bu projede başarıyla:
+This project successfully:
 
-- ✅ Lambda mimarisi implementasyonu yapıldı
-- ✅ Apache Spark ile batch processing gerçekleştirildi (14,640 tweet analizi)
-- ✅ Kafka Streams ile real-time stream processing yapıldı
-- ✅ Negatif sentiment detection ve alerting sistemi kuruldu
-- ✅ Docker ortamında Kafka ekosistemi çalıştırıldı
-- ✅ Apache Hive Data Catalog kuruldu ve 3 tablo oluşturuldu
-- ✅ PostgreSQL Hive Metastore olarak yapılandırıldı
-- ✅ HiveServer2 ile SQL sorguları çalıştırıldı
+- ✅ Implemented Lambda architecture
+- ✅ Performed batch processing with Apache Spark (14,640 tweet analysis)
+- ✅ Performed real-time stream processing with Kafka Streams
+- ✅ Established negative sentiment detection and alerting system
+- ✅ Ran Kafka ecosystem in Docker environment
+- ✅ Established Apache Hive Data Catalog and created 3 tables
+- ✅ Configured PostgreSQL as Hive Metastore
+- ✅ Executed SQL queries with HiveServer2
 
-**İstatistikler:**
-- Toplam tweet: 14,640
-- 6 havayolu analiz edildi
-- En yüksek negatif oran: US Airways (%77.7)
-- En düşük negatif oran: Virgin America (%35.9)
-- Stream processing hızı: ~9.7 msg/s
-- Hive tabloları: 3 (tweets_raw_csv, tweets_stream_avro, batch_airline_sentiment)
-- Docker servisleri: 7 (Zookeeper, Kafka, Schema Registry, Kafka UI, PostgreSQL, Hive Metastore, HiveServer2)
+**Statistics:**
+- Total tweets: 14,640
+- 6 airlines analyzed
+- Highest negative ratio: US Airways (77.7%)
+- Lowest negative ratio: Virgin America (35.9%)
+- Stream processing speed: ~9.7 msg/s
+- Hive tables: 3 (tweets_raw_csv, tweets_stream_avro, batch_airline_sentiment)
+- Docker services: 7 (Zookeeper, Kafka, Schema Registry, Kafka UI, PostgreSQL, Hive Metastore, HiveServer2)
 
 ---
 
-## 7. Proje Yapısı
+## 7. Project Structure
 
 ```
-high-data/
-├── src/main/java/com/twitter/streams/    # Java Kafka Streams uygulamaları
-│   ├── Tweet.java                        # Tweet veri modeli
+high-data-twitter-sentiment/
+├── src/main/java/com/twitter/streams/    # Java Kafka Streams applications
+│   ├── Tweet.java                        # Tweet data model
 │   ├── TweetSerde.java                   # Kafka Serde (Serializer/Deserializer)
-│   ├── SentimentAlertApp.java            # Use Case A: Negatif tweet uyarıları
-│   └── RetweetCounterApp.java            # Use Case B: Pencereli retweet sayacı
+│   ├── SentimentAlertApp.java            # Use Case A: Negative tweet alerts
+│   └── RetweetCounterApp.java            # Use Case B: Windowed retweet counter
 │
 ├── scripts/
 │   ├── kafka_producer.py                 # Python Kafka Producer
-│   ├── spark_batch_job.py                # PySpark Batch İşleme
-│   ├── hive_tables.sql                   # Hive tablo tanımları
-│   └── *.bat                             # Windows batch script'leri
+│   ├── spark_batch_job.py                # PySpark Batch Processing
+│   ├── hive_tables.sql                   # Hive table definitions
+│   ├── *.sh                              # Mac/Linux shell scripts
+│   └── *.bat                             # Windows batch scripts
 │
 ├── config/
-│   ├── application.properties            # Uygulama ayarları
+│   ├── application.properties            # Application settings
 │   └── kafka-connect-hdfs.properties     # Kafka Connect HDFS sink config
 │
-├── data/                                 # Tweets.csv veri dosyası
-├── output/                               # Spark batch çıktıları
-│   ├── batch_results_csv/               # CSV formatında sonuçlar
-│   └── batch_results_parquet/           # Parquet formatında sonuçlar
-├── images/                               # Ekran görüntüleri
-├── docker-compose.yml                    # Docker ortamı (Kafka + Hive)
-├── pom.xml                               # Maven build dosyası
-├── requirements.txt                      # Python bağımlılıkları
-└── PROJECT_REPORT.md                     # Bu rapor
+├── data/                                 # Tweets.csv data file
+├── output/                               # Spark batch outputs
+│   ├── batch_results_csv/               # Results in CSV format
+│   └── batch_results_parquet/           # Results in Parquet format
+├── images/                               # Screenshots
+├── docker-compose.yml                    # Docker environment (Kafka + Hive)
+├── pom.xml                               # Maven build file
+├── requirements.txt                      # Python dependencies
+└── PROJECT_REPORT.md                     # This report (Turkish)
+└── PROJECT_REPORT_EN.md                  # This report (English)
 ```
 
 ---
 
-## 8. Referanslar
+## 8. References
 
 1. **Dataset:** [Kaggle - Twitter US Airline Sentiment](https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment)
 2. **Apache Kafka Streams:** [kafka.apache.org/documentation/streams](https://kafka.apache.org/documentation/streams/)
@@ -848,6 +867,7 @@ high-data/
 
 ---
 
-**Rapor Tarihi:** Aralık 2025
+**Report Date:** December 2025
 
-**Ders:** High-Performance Data Processing (4. Sınıf)
+**Course:** High-Performance Data Processing (4th Year)
+
