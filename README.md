@@ -19,7 +19,7 @@ Bu proje, Apache Spark (batch) ve Apache Kafka Streams (stream) kullanarak Twitt
 
 ---
 
-## 🚀 Hızlı Başlangıç (Windows)
+## 🚀 Hızlı Başlangıç
 
 ### Gereksinimler
 
@@ -28,7 +28,11 @@ Bu proje, Apache Spark (batch) ve Apache Kafka Streams (stream) kullanarak Twitt
 - **Maven 3.6+**: [maven.apache.org](https://maven.apache.org/download.cgi)
 - **Docker Desktop**: [docker.com](https://www.docker.com/products/docker-desktop)
 
-### Kurulum
+---
+
+### Windows
+
+#### Kurulum
 
 ```powershell
 # 1. Proje dizinine git
@@ -41,7 +45,7 @@ scripts\setup_environment.bat
 # https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
 ```
 
-### Çalıştırma
+#### Çalıştırma
 
 ```powershell
 # 1. Kafka'yı başlat (Docker)
@@ -62,6 +66,48 @@ scripts\run_spark_job.bat
 
 ---
 
+### Mac / Linux
+
+#### Kurulum
+
+```bash
+# 1. Proje dizinine git
+cd 4-sinif/high-data
+
+# 2. Script'lere execute izni ver
+chmod +x scripts/*.sh
+
+# 3. Ortamı kur
+./scripts/setup_environment.sh
+
+# 4. Tweets.csv'yi indir ve data/ klasörüne koy
+# https://www.kaggle.com/datasets/crowdflower/twitter-airline-sentiment
+```
+
+#### Çalıştırma
+
+```bash
+# 1. Kafka'yı başlat (Docker)
+./scripts/start_kafka.sh
+
+# 2. Kafka topic'lerini oluştur
+./scripts/create_topics.sh
+
+# 3. Terminal 1: Kafka Streams uygulamasını başlat
+./scripts/run_streams_app.sh
+
+# 4. Terminal 2: Producer'ı çalıştır (verileri stream et)
+./scripts/run_producer.sh
+
+# 5. Spark batch job'ı çalıştır
+./scripts/run_spark_job.sh
+
+# Kafka'yı durdurmak için:
+./scripts/stop_kafka.sh
+```
+
+---
+
 ## 📁 Proje Yapısı
 
 ```
@@ -76,11 +122,14 @@ high-data/
 │   ├── kafka_producer.py                 # Python Kafka Producer
 │   ├── spark_batch_job.py                # PySpark Batch İşleme
 │   ├── hive_tables.sql                   # Hive tablo tanımları
-│   ├── setup_environment.bat             # Ortam kurulumu
-│   ├── start_kafka.bat                   # Kafka başlatma
-│   ├── run_producer.bat                  # Producer çalıştırma
-│   ├── run_spark_job.bat                 # Spark job çalıştırma
-│   └── run_streams_app.bat               # Kafka Streams çalıştırma
+│   ├── setup_environment.bat/.sh          # Ortam kurulumu (Windows/Mac)
+│   ├── start_kafka.bat/.sh                # Kafka başlatma (Windows/Mac)
+│   ├── create_topics.bat/.sh              # Topic oluşturma (Windows/Mac)
+│   ├── run_producer.bat/.sh               # Producer çalıştırma (Windows/Mac)
+│   ├── run_spark_job.bat/.sh              # Spark job çalıştırma (Windows/Mac)
+│   ├── run_streams_app.bat/.sh            # Kafka Streams çalıştırma (Windows/Mac)
+│   ├── build_java.bat/.sh                 # Java build (Windows/Mac)
+│   └── stop_kafka.sh                      # Kafka durdurma (Mac/Linux)
 │
 ├── config/
 │   ├── application.properties            # Uygulama ayarları
