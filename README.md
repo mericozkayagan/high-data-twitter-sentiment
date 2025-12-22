@@ -17,6 +17,11 @@ Bu proje, Apache Spark (batch) ve Apache Kafka Streams (stream) kullanarak Twitt
 
 **Seçilen Track:** Track 2A - Apache Kafka Ecosystem
 
+**Grup Üyeleri:**
+- Meriç Özkayagan (05230001155)
+- Mustafa Yiğit Güzel (05210000209)
+- Fatma Verda Yüksel (05210000299)
+
 ---
 
 ## 🚀 Hızlı Başlangıç
@@ -239,6 +244,9 @@ LOCATION '/project/batch_results_parquet/';
 | Kafka | 9092 | Message broker |
 | Schema Registry | 8081 | Avro şema yönetimi |
 | Kafka UI | 8080 | Web arayüzü |
+| PostgreSQL | 5432 | Hive Metastore veritabanı |
+| Hive Metastore | 9083 | Hive metadata yönetimi |
+| HiveServer2 | 10000, 10002 | Hive SQL server ve Web UI |
 
 **Başlatma:**
 ```powershell
@@ -248,6 +256,15 @@ docker-compose up -d
 **Durdurma:**
 ```powershell
 docker-compose down
+```
+
+**Hive Tablolarını Oluşturma:**
+```bash
+# HiveServer2'ye bağlan
+docker exec -it hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p ""
+
+# SQL dosyasını çalıştır
+docker exec -i hive-server /opt/hive/bin/beeline -u jdbc:hive2://localhost:10000 -n "" -p "" < scripts/hive_tables.sql
 ```
 
 ---
