@@ -49,3 +49,7 @@ derby.log
 # Temp
 *.tmp
 *.temp
+
+# Submission ZIP files
+*.zip
+!create_zip.*
