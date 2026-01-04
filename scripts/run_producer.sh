@@ -31,3 +31,5 @@ echo ""
 
 python3 scripts/kafka_producer.py
 
+
+

@@ -34,3 +34,5 @@ echo "  - tweets_topic (3 partitions)"
 echo "  - realtime_alerts (3 partitions)"
 echo ""
 
+
+

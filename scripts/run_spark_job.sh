@@ -27,3 +27,5 @@ echo ""
 
 python3 scripts/spark_batch_job.py
 
+
+

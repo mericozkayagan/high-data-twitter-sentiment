@@ -38,3 +38,5 @@ echo ""
 echo "To stop: docker-compose down"
 echo ""
 
+
+

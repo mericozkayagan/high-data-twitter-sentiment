@@ -31,3 +31,5 @@ echo ""
 
 java -jar target/twitter-sentiment-analysis-1.0.0.jar
 
+
+

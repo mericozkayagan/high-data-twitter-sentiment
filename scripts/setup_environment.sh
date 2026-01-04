@@ -65,3 +65,5 @@ echo "  4. Run Spark job: run './scripts/run_spark_job.sh'"
 echo "  5. Run Kafka Streams: run './scripts/run_streams_app.sh'"
 echo ""
 
+
+
